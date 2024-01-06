@@ -4,7 +4,7 @@ using System;
 
 public class Piano : MonoBehaviour
 {
-    public List<AudioClip> clips; // Assign this in the Unity Editor
+    public List<AudioClip> clips;
     Dictionary<string, (string, float)> keyMappings;
     Dictionary<string, AudioSource> audioSources;
     float octaveShift = 1.0f;
@@ -113,5 +113,10 @@ public class Piano : MonoBehaviour
         {
             audioSources[mapping.Key].clip = clip;
         }
+    }
+
+    static public void QuitApplication()
+    {
+        Application.Quit();
     }
 }
