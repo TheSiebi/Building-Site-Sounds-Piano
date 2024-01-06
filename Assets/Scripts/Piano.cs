@@ -9,8 +9,13 @@ public class Piano : MonoBehaviour
     Dictionary<string, AudioSource> audioSources;
     float octaveShift = 1.0f;
 
+    private FileManager fileManager;
+
     void Start()
     {
+        // Get FileManager
+        fileManager = GetComponent<FileManager>();
+        
         // Initialize the dictionary with key mappings
         keyMappings = new Dictionary<string, (string, float)>
         {
@@ -78,6 +83,12 @@ public class Piano : MonoBehaviour
 
     public void HandleDropdown(int val)
     {
+        // Custom sound option
+        if (val == 3)
+        {
+            fileManager.OpenFileBrowser();
+        }
+        
         foreach (var mapping in keyMappings)
         {
             audioSources[mapping.Key].clip = clips[val % clips.Count];
@@ -94,5 +105,13 @@ public class Piano : MonoBehaviour
             }
         }
         catch (NullReferenceException) { }
+    }
+
+    public void SetClip(AudioClip clip)
+    {
+        foreach (var mapping in keyMappings)
+        {
+            audioSources[mapping.Key].clip = clip;
+        }
     }
 }

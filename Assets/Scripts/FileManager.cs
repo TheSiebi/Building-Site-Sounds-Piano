@@ -1,29 +1,41 @@
 using AnotherFileBrowser.Windows;
 using System.Collections;
-using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class FileManager : MonoBehaviour
 {
-    public RawImage rawImage;
+    [SerializeField]
+    private Piano piano;
 
     public void OpenFileBrowser()
     {
         var bp = new BrowserProperties();
-        bp.filter = "Image files | *.jpg; *.jpeg; *.png";
+        bp.filter = "Sound files | *.wav; *.mp3";
         bp.filterIndex = 0;
 
         new FileBrowser().OpenFileBrowser(bp, path =>
         {
-            StartCoroutine(LoadImage(path));
+            StartCoroutine(LoadClip(path));
         });
     }
 
-    IEnumerator LoadImage(string path)
+    IEnumerator LoadClip(string path)
     {
-        using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(path))
+        string ext = Path.GetExtension(path);
+        AudioType audioType;
+        if (ext.Contains("wav"))
+        {
+            audioType = AudioType.WAV;
+        }
+        else
+        {
+            audioType = AudioType.MPEG;
+        }
+
+        using (UnityWebRequest uwr = UnityWebRequestMultimedia.GetAudioClip(path, audioType))
         {
             yield return uwr.SendWebRequest();
 
@@ -32,8 +44,8 @@ public class FileManager : MonoBehaviour
                 Debug.Log(uwr.error);
             } else
             {
-                var uwrTexture = DownloadHandlerTexture.GetContent(uwr);
-                rawImage.texture = uwrTexture;
+                AudioClip clip = DownloadHandlerAudioClip.GetContent(uwr);
+                piano.SetClip(clip);
             }
         }
     }
